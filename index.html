@@ -2,10 +2,21 @@
 <html lang="en" class="dark">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Deneth Finance Tracker</title>
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- PWA Manifest & Meta -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#0f172a">
+    
+    <!-- iOS / Safari PWA support -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Deneth Finance">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    
+    <!-- Local Tailwind CSS JIT -->
+    <script src="tailwind.js"></script>
     <script>
         tailwind.config = {
             darkMode: 'class',
@@ -18,14 +29,12 @@
             }
         }
     </script>
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Local Font Awesome (SVG with JS) -->
+    <script src="fontawesome.js"></script>
     <!-- Custom CSS -->
     <link rel="stylesheet" href="style.css">
-    <!-- Dexie.js -->
-    <script src="https://unpkg.com/dexie/dist/dexie.js"></script>
+    <!-- Local Dexie.js -->
+    <script src="dexie.js"></script>
 </head>
 <body class="antialiased min-h-screen bg-slate-50 dark:bg-slate-900 pb-24 no-scrollbar transition-colors duration-300">
     <div class="max-w-md mx-auto relative min-h-screen flex flex-col shadow-2xl bg-slate-50 dark:bg-slate-900 transition-colors duration-300">
@@ -216,5 +225,15 @@
 
     <!-- Main Logic -->
     <script src="app.js"></script>
+    <!-- Service Worker Registration -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js')
+                    .then(reg => console.log('Service Worker registered successfully!', reg))
+                    .catch(err => console.log('Service Worker registration failed!', err));
+            });
+        }
+    </script>
 </body>
 </html>
