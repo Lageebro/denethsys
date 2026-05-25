@@ -1,10 +1,9 @@
-const CACHE_NAME = 'deneth-finance-v1';
+const CACHE_NAME = 'deneth-finance-v2';
 const ASSETS = [
   './',
   './index.html',
   './app.js',
-  './style.css',
-  './tailwind.js',
+  './tailwind-built.css',
   './fontawesome.js',
   './dexie.js',
   './manifest.json',
