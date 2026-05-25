@@ -14,13 +14,28 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Deneth Finance">
     <link rel="apple-touch-icon" href="icon-192.png">
-    
-    <!-- Compiled Standalone Tailwind & Custom Stylesheet -->
-    <link rel="stylesheet" href="tailwind-built.css">
-    <!-- Local Font Awesome (SVG with JS) -->
-    <script src="fontawesome.js"></script>
-    <!-- Local Dexie.js -->
-    <script src="dexie.js"></script>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        darkbg: '#0f172a',
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="style.css">
+    <!-- Dexie.js CDN -->
+    <script src="https://unpkg.com/dexie/dist/dexie.js"></script>
 </head>
 <body class="antialiased min-h-screen bg-slate-50 dark:bg-slate-900 pb-24 no-scrollbar transition-colors duration-300">
     <div class="max-w-md mx-auto relative min-h-screen flex flex-col shadow-2xl bg-slate-50 dark:bg-slate-900 transition-colors duration-300">
