@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Deneth Finance Tracker</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        darkbg: '#0f172a',
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="style.css">
+    <!-- Dexie.js -->
+    <script src="https://unpkg.com/dexie/dist/dexie.js"></script>
+</head>
+<body class="antialiased min-h-screen bg-slate-50 dark:bg-slate-900 pb-24 no-scrollbar transition-colors duration-300">
+    <div class="max-w-md mx-auto relative min-h-screen flex flex-col shadow-2xl bg-slate-50 dark:bg-slate-900 transition-colors duration-300">
+        
+        <!-- Header -->
+        <header class="p-5 glass-panel sticky top-0 z-40 rounded-b-3xl shadow-lg border-b border-black/5 dark:border-white/5">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center space-x-2">
+                    <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-blue-500 to-emerald-500 flex items-center justify-center text-sm font-bold shadow-lg text-white">D</div>
+                    <h1 class="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-emerald-500 dark:from-blue-400 dark:to-emerald-400">Finance</h1>
+                </div>
+                <button onclick="toggleTheme()" class="w-10 h-10 rounded-full flex items-center justify-center text-slate-500 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors btn-scale">
+                    <i id="theme-icon" class="fas fa-moon text-lg"></i>
+                </button>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main id="app-content" class="flex-1 p-4 space-y-6 relative overflow-y-auto no-scrollbar">
+            
+            <!-- ====== HOME / DASHBOARD VIEW ====== -->
+            <div id="home-view" class="view-section transition-opacity duration-300">
+                <!-- Header -->
+                <div class="flex justify-between items-center mb-6 px-1">
+                    <h2 class="text-xl font-bold text-slate-800 dark:text-slate-200">Dashboard <span class="text-xs text-slate-500 ml-2 font-normal">(All Time)</span></h2>
+                </div>
+                
+                <!-- Main Balance Card -->
+                <div class="glass-card mb-4 bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-900 border border-emerald-500/20 dark:border-emerald-500/30 relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-emerald-500/10 rounded-full blur-2xl -mr-10 -mt-10 pointer-events-none"></div>
+                    <p class="text-sm text-slate-500 dark:text-slate-400 mb-1">Total Balance</p>
+                    <p class="text-3xl font-bold text-slate-800 dark:text-white mb-2" id="home-balance">Rs. 0</p>
+                </div>
+
+                <!-- Income / Expense Row -->
+                <div class="grid grid-cols-2 gap-3 mb-6">
+                    <div class="glass-card !p-4 border border-emerald-500/20 relative overflow-hidden">
+                        <div class="absolute -bottom-4 -right-4 w-16 h-16 bg-emerald-500/10 rounded-full blur-xl pointer-events-none"></div>
+                        <div class="w-8 h-8 rounded-full bg-emerald-100 dark:bg-emerald-500/20 flex items-center justify-center mb-2">
+                            <i class="fas fa-arrow-down text-emerald-600 dark:text-emerald-400 text-sm"></i>
+                        </div>
+                        <p class="text-xs text-emerald-600 dark:text-emerald-400 mb-1">Income</p>
+                        <p class="text-lg font-bold text-slate-800 dark:text-slate-100" id="home-income">Rs. 0</p>
+                    </div>
+                    <div class="glass-card !p-4 border border-red-500/20 relative overflow-hidden">
+                        <div class="absolute -bottom-4 -right-4 w-16 h-16 bg-red-500/10 rounded-full blur-xl pointer-events-none"></div>
+                        <div class="w-8 h-8 rounded-full bg-red-100 dark:bg-red-500/20 flex items-center justify-center mb-2">
+                            <i class="fas fa-arrow-up text-red-600 dark:text-red-400 text-sm"></i>
+                        </div>
+                        <p class="text-xs text-red-600 dark:text-red-400 mb-1">Expense</p>
+                        <p class="text-lg font-bold text-slate-800 dark:text-slate-100" id="home-expense">Rs. 0</p>
+                    </div>
+                </div>
+
+                <!-- Loan Summary Card -->
+                <div class="glass-card mb-6 border border-amber-500/20 relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-24 h-24 bg-amber-500/10 rounded-full blur-2xl -mr-10 -mt-10 pointer-events-none"></div>
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <p class="text-sm text-slate-500 dark:text-slate-400 mb-1">Total Outstanding Loans</p>
+                            <p class="text-xl font-bold text-amber-500 dark:text-amber-400" id="home-outstanding">Rs. 0</p>
+                        </div>
+                        <div class="w-10 h-10 rounded-full bg-amber-100 dark:bg-amber-500/20 flex items-center justify-center">
+                            <i class="fas fa-hand-holding-dollar text-amber-600 dark:text-amber-400 text-lg"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <h3 class="text-sm font-semibold text-slate-500 dark:text-slate-400 mb-3 px-1 uppercase tracking-wider">Quick Links</h3>
+                <div class="grid grid-cols-2 gap-3 pb-8">
+                    <button onclick="switchView('cashflow')" class="glass-card !p-3 text-center border-black/5 dark:border-white/5 hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors btn-scale">
+                        <i class="fas fa-history text-blue-500 dark:text-blue-400 mb-2 text-xl block"></i>
+                        <span class="text-xs font-medium text-slate-600 dark:text-slate-300">View History</span>
+                    </button>
+                    <button onclick="switchView('loans')" class="glass-card !p-3 text-center border-black/5 dark:border-white/5 hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors btn-scale">
+                        <i class="fas fa-handshake text-amber-500 dark:text-amber-400 mb-2 text-xl block"></i>
+                        <span class="text-xs font-medium text-slate-600 dark:text-slate-300">View Loans</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- ====== DAILY TRACKER VIEW ====== -->
+            <div id="cashflow-view" class="view-section hidden transition-opacity duration-300">
+                
+                <!-- Quick Add Card -->
+                <div class="glass-card mb-6 border border-blue-500/20">
+                    <h2 class="text-lg font-semibold mb-4 text-blue-600 dark:text-blue-300"><i class="fas fa-plus-circle mr-2"></i>New Transaction</h2>
+                    <form id="form-cashflow" class="space-y-3">
+                        <div class="flex space-x-2">
+                            <button type="button" id="btn-type-income" onclick="setTxType('income')" class="flex-1 py-2 rounded-xl text-sm font-medium transition-colors border border-emerald-500/50 bg-emerald-100 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 shadow-sm">Income</button>
+                            <button type="button" id="btn-type-expense" onclick="setTxType('expense')" class="flex-1 py-2 rounded-xl text-sm font-medium transition-colors border border-red-500/50 text-red-500 dark:text-red-400 opacity-50 hover:bg-red-50 dark:hover:bg-red-500/10">Expense</button>
+                            <input type="hidden" id="tx-type" value="income">
+                        </div>
+                        <input type="text" id="tx-desc" placeholder="Description (e.g. Salary, Fuel)" class="w-full p-3 rounded-xl text-sm text-slate-800 dark:text-white" required>
+                        <div class="flex space-x-2">
+                            <div class="relative flex-1">
+                                <span class="absolute left-3 top-3 text-slate-400 dark:text-gray-400 text-sm">Rs.</span>
+                                <input type="number" id="tx-amount" placeholder="Amount" class="w-full p-3 pl-9 rounded-xl text-sm text-slate-800 dark:text-white" required min="1">
+                            </div>
+                            <input type="date" id="tx-date" class="w-1/2 p-3 rounded-xl text-sm text-slate-800 dark:text-white" required>
+                        </div>
+                        <button type="submit" class="w-full py-3 rounded-xl bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-semibold shadow-lg shadow-blue-500/30 btn-scale mt-2"><i class="fas fa-save mr-2"></i>Save Record</button>
+                    </form>
+                </div>
+
+                <!-- Monthly Filter & List -->
+                <div class="flex justify-between items-center mb-4 px-1">
+                    <h2 class="text-lg font-semibold text-slate-800 dark:text-slate-200">History</h2>
+                    <select id="month-filter" class="p-2 rounded-lg text-xs border border-black/10 dark:border-white/10 text-slate-800 dark:text-white bg-white dark:bg-slate-800 focus:ring-blue-500 focus:border-blue-500" onchange="loadCashflow()">
+                        <option value="all">All Time</option>
+                    </select>
+                </div>
+                
+                <!-- Summary Cards -->
+                <div class="grid grid-cols-2 gap-3 mb-4">
+                    <div class="glass-card !p-3 border border-emerald-500/20">
+                        <p class="text-xs text-emerald-600 dark:text-emerald-400 mb-1">Total Income</p>
+                        <p class="text-lg font-bold text-slate-800 dark:text-slate-100" id="summary-income">Rs. 0</p>
+                    </div>
+                    <div class="glass-card !p-3 border border-red-500/20">
+                        <p class="text-xs text-red-600 dark:text-red-400 mb-1">Total Expense</p>
+                        <p class="text-lg font-bold text-slate-800 dark:text-slate-100" id="summary-expense">Rs. 0</p>
+                    </div>
+                </div>
+
+                <!-- Transactions List -->
+                <div id="cashflow-list" class="space-y-3 pb-8">
+                    <!-- Dynamic Items -->
+                </div>
+            </div>
+
+            <!-- ====== LOAN REGISTRY VIEW ====== -->
+            <div id="loans-view" class="view-section hidden transition-opacity duration-300">
+                
+                <!-- Quick Add Card -->
+                <div class="glass-card mb-6 border border-amber-500/20">
+                    <h2 class="text-lg font-semibold mb-4 text-amber-600 dark:text-amber-400"><i class="fas fa-hand-holding-dollar mr-2"></i>Give a Loan</h2>
+                    <form id="form-loan" class="space-y-3">
+                        <input type="text" id="loan-name" placeholder="Friend's Name" class="w-full p-3 rounded-xl text-sm text-slate-800 dark:text-white" required>
+                        <div class="flex space-x-2">
+                            <div class="relative flex-1">
+                                <span class="absolute left-3 top-3 text-slate-400 dark:text-gray-400 text-sm">Rs.</span>
+                                <input type="number" id="loan-amount" placeholder="Amount" class="w-full p-3 pl-9 rounded-xl text-sm text-slate-800 dark:text-white" required min="1">
+                            </div>
+                            <input type="date" id="loan-date" class="w-1/2 p-3 rounded-xl text-sm text-slate-800 dark:text-white" required>
+                        </div>
+                        <button type="submit" class="w-full py-3 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white font-semibold shadow-lg shadow-amber-500/30 btn-scale mt-2"><i class="fas fa-paper-plane mr-2"></i>Record Loan</button>
+                    </form>
+                </div>
+
+                <!-- Loan Tabs -->
+                <div class="flex space-x-2 mb-4 p-1 bg-slate-200 dark:bg-slate-800 rounded-xl">
+                    <button id="tab-active" onclick="switchLoanTab('pending')" class="flex-1 py-2 text-sm font-medium rounded-lg bg-white dark:bg-slate-700 text-slate-800 dark:text-white shadow transition-all">Active (Pending)</button>
+                    <button id="tab-settled" onclick="switchLoanTab('settled')" class="flex-1 py-2 text-sm font-medium rounded-lg text-slate-500 dark:text-gray-400 hover:text-slate-800 dark:hover:text-white transition-all">Settled Logs</button>
+                </div>
+
+                <!-- Summary Card Loans -->
+                <div class="glass-card !p-3 border border-amber-500/20 mb-4" id="loan-summary-card">
+                    <p class="text-xs text-amber-600 dark:text-amber-400 mb-1" id="loan-summary-title">Total Outstanding</p>
+                    <p class="text-lg font-bold text-amber-600 dark:text-amber-400" id="loan-summary-amount">Rs. 0</p>
+                </div>
+
+                <!-- Loans List -->
+                <div id="loans-list" class="space-y-3 pb-8">
+                    <!-- Dynamic Items -->
+                </div>
+            </div>
+
+        </main>
+
+        <!-- Bottom Navigation -->
+        <nav class="fixed bottom-0 w-full max-w-md glass-panel rounded-t-3xl flex justify-around p-3 z-50 border-t border-black/5 dark:border-white/5 pb-safe">
+            <button id="nav-home" onclick="switchView('home')" class="nav-btn flex-1 flex flex-col items-center text-blue-600 dark:text-blue-400 btn-scale pt-2">
+                <i class="fas fa-home text-xl mb-1"></i>
+                <span class="text-[10px] font-medium tracking-wide mt-1">Home</span>
+            </button>
+            <button id="nav-cashflow" onclick="switchView('cashflow')" class="nav-btn flex-1 flex flex-col items-center text-slate-500 hover:text-blue-600 dark:text-gray-500 dark:hover:text-blue-400 transition-colors btn-scale pt-2">
+                <i class="fas fa-wallet text-xl mb-1"></i>
+                <span class="text-[10px] font-medium tracking-wide mt-1">Tracker</span>
+            </button>
+            <button id="nav-loans" onclick="switchView('loans')" class="nav-btn flex-1 flex flex-col items-center text-slate-500 hover:text-amber-600 dark:text-gray-500 dark:hover:text-amber-400 transition-colors btn-scale pt-2">
+                <i class="fas fa-handshake text-xl mb-1"></i>
+                <span class="text-[10px] font-medium tracking-wide mt-1">Naya Tracker</span>
+            </button>
+        </nav>
+    </div>
+
+    <!-- Main Logic -->
+    <script src="app.js"></script>
+</body>
+</html>
